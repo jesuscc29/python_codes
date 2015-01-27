@@ -139,3 +139,22 @@ def reset_pass(email):
             print "Is the email server online?"
  
     return
+# @cache_page(None)  # won't expire, ever
+def dyn_css(request):
+    css_theme = SystemSettings.objects.get(pk=1)
+    return render_to_response('static/theme/css/style.css', {'theme': css_theme},
+                              content_type="text/css")
+                              
+def reset_cache(request, view='dyn_css', args=None):
+    from django.core.cache import cache
+    from django.utils.cache import get_cache_key
+
+    if args is None:
+        path = reverse(view)
+    else:
+        path = reverse(view, args=args)
+
+    request.path = path
+    key = get_cache_key(request)
+    if key in cache:
+        cache.delete(key)

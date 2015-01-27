@@ -56,3 +56,86 @@ def date_time_functions():
                                             kwargs={'deal_slug': deal_slug}))
     else:
         print form.errors
+        
+def user_login(request):
+    error = ''
+    if request.user.is_authenticated():
+        return HttpResponseRedirect("/main/")
+    if request.method == "POST":
+        if 'email' in request.POST and request.POST['email']:
+            if is_valid_email(request.POST['email']):
+                #reset password
+                reset_pass(request.POST['email'])
+                error = "En breve recibirá un correo con su nueva contraseña."
+            else:
+                error = 'El correo proporcionado no es v&aacute;lido'
+        else:
+            username = request.POST['username']
+            password = request.POST['password']
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                if user.is_active:
+                    if 'rememberme' not in request.POST:
+                        request.session.set_expiry(300)
+ 
+                    login(request, user)
+                    url = "/main/"
+                    try:
+                        ur_get = request.META['HTTP_REFERER']
+                    except KeyError:
+                        pass
+                    else:
+                        ur_get = ur_get.split("next=")
+                        if len(ur_get) > 1:
+                            url = ur_get[1]
+                    return HttpResponseRedirect(url)
+                else:
+                    error = "Tu cuenta ha sido desactivada, por favor " \
+                            "ponte en contacto con tu administrador"
+            else:
+                error = "Tu nombre de usuario o contrase&ntilde;a son " \
+                        "incorrectos."
+    institution = settings.PROJECT_NAME
+    variables = dict(error=error,
+                     institution=institution)
+    variables_template = RequestContext(request, variables)
+    return render_to_response("login.html", variables_template)
+ 
+ 
+def logout_page(request):
+    logout(request)
+    return HttpResponseRedirect('/main/')
+ 
+ 
+def reset_pass(email):
+    new_pass = random_string_generator()
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        pass
+    else:
+        user.set_password(new_pass)
+        domain = settings.DOMAIN
+        url_sys = 'http://'+domain
+        subject, from_email, to = 'Reseteo de contraseña', \
+                                  'noresponse@{0}'.format(domain), email
+        text_content = 'Su contraseña ha sido restablecida, puede ingresar ' \
+                       'al sistema ({0}) con su nombre de usuario y ' \
+                       'la contraseña: {1} \n Una vez dentro del sistema, ' \
+                       'podrá cambiar su contraseña por la que usted desee'\
+            .format(url_sys, new_pass)
+        html_content = '<h1>Su contraseña ha sido restablecida</h1>' \
+                       '<p>Puede ingresar al <a href="{0}">sistema escolar ' \
+                       'con su nombre de usuario y contraseña:</p>' \
+                       '<p style="text-align:center;">{1}</p>' \
+                       '<p>Una vez dentro del sistema, podrá cambiar su ' \
+                       'contraseña por la que usted desee</p>'\
+            .format(url_sys, new_pass)
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+        msg.attach_alternative(html_content, "text/html")
+        try:
+            msg.send()
+        except error:
+            print "Is the email server online?"
+ 
+    return

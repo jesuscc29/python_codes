@@ -1,0 +1,7 @@
+django
+mysql-python
+south
+pillow
+simplejson
+pytz
+django-debug-toolbar

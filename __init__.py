@@ -158,3 +158,15 @@ def reset_cache(request, view='dyn_css', args=None):
     key = get_cache_key(request)
     if key in cache:
         cache.delete(key)
+        
+  # ++==================================================================++
+def get_initial(self):
+    """
+    This function can be inside of a  Class Based View to access the request
+    variable
+    """
+    user = self.request.user
+    permission = False
+    if has_permissions(user, 'Proyectos', 'Consulta'):
+        permission = True
+    return permission

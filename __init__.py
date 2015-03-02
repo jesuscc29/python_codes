@@ -170,3 +170,17 @@ def get_initial(self):
     if has_permissions(user, 'Proyectos', 'Consulta'):
         permission = True
     return permission
+    
+    
+from datetime import datetime, timedelta
+
+    def week_of_month(date):
+      """ gets the number of week of a current date
+      """
+        month = date.month
+        week = 0
+        while date.month == month:
+            week += 1
+            date -= timedelta(days=7)
+
+        return week

@@ -16,3 +16,27 @@ function validateRequiredFields(form) {
     });
     return is_valid;
   }
+  
+/* Do Ajax While Typing */  
+delay(function () {
+        var text = $("#searchClient").val();
+        if (text != '') {
+                e.preventDefault();
+                $.ajax({
+                        type: "post",
+                        url: "{% url "search_client" %}",
+                        data: {
+                                'text': text,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function (data) {
+                                console.log(data);
+                        },
+                        error: function (data) {
+                                console.log(data);
+                        }
+                });
+        } else {
+                //$("#table-data").hide();
+        }
+}, 900);

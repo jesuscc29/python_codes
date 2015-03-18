@@ -50,3 +50,42 @@ if (url.match('#')) {
            $('.nav-tabs a').on('click', function (e) {
                window.location.hash = e.target.hash;
            });
+           
+/* Function to autocomplete on input field based on a query
+* This example is based on Django.
+* See __init__.py to see the Django/Python code
+*/
+
+$(function () {
+            $("#id_service").autocomplete({
+                minLength: 3,
+                source: function (req, add) {
+                    $.ajax({
+                        url: '{% url "autocomplete_services" %}',
+                        async: false,
+                        dataType: 'json',
+                        type: 'POST',
+                        data: {
+                            service: function () {
+                                return $("#id_service").val();
+                            },
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function (data) {
+
+                            //create array for response objects
+                            var suggestions = [];
+
+                            data.forEach(function(item) {
+                                //console.log(item['service']);
+                                suggestions.push(item['service']);
+                            });
+
+                            console.log(suggestions);
+                            //pass array to callback
+                            add(suggestions);
+                        }
+                    });
+                }
+            });
+        });

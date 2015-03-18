@@ -170,3 +170,20 @@ def get_initial(self):
     if has_permissions(user, 'Proyectos', 'Consulta'):
         permission = True
     return permission
+    
+# ===============================================================
+def autocomplete_services(request):
+  """ This functions returns the values of a filed that contains some string
+  then apply a 'distinct' filter to avoid equal results.
+  See init.js to see the jQueryUI function.
+  """
+    if request.method == 'GET' or not request.POST.__contains__('service'):
+        return HttpResponseForbidden()
+    from django.db.models import Count
+
+    services = Service.objects.filter(
+        service__icontains=request.POST['service']
+    ).values('service').annotate(n=Count('service'))
+    print services
+
+    return response_json(list(services), 200)

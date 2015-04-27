@@ -184,3 +184,34 @@ from datetime import datetime, timedelta
             date -= timedelta(days=7)
 
         return week
+        
+        
+        
+# ===================================
+# MANDRILL EXAMPLE
+# ===================================
+import mandrill
+client = mandrill.Mandrill('API KEY')
+message = dict()
+
+ message = {
+   'subject': 'Test Email', 
+   'text': 'Example Text', 
+   'to': [
+     {
+       'email': 'cyko.cota@gmail.com', 
+       'name': 'Jesus', 
+       'type': 'to'}
+       ]
+   }
+   
+result = client.messages.send(message=message, async=False, ip_pool='Main Pool')
+
+"""
+[{u'_id': u'd22c0a7b08b549aeaae46e60fbd54be1',
+  u'email': u'cyko.cota@gmail.com',
+  u'reject_reason': None,
+  u'status': u'sent'}]
+
+"""
+

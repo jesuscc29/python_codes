@@ -215,3 +215,16 @@ result = client.messages.send(message=message, async=False, ip_pool='Main Pool')
 
 """
 
+# =====================================
+# DOWNLAOD IMAGE FROM URL(Facebook) And save it to a model. DJANGO
+# =====================================
+contact = CompanyContact.objects.get(pk=pk)
+fb_url = 'https://graph.facebook.com/%s/picture?type=large' % username
+urllib.urlretrieve(fb_url, "tmp.jpg")
+result = urllib.urlretrieve(fb_url)
+contact.profile_picture.save(
+  os.path.basename(fb_url),
+  File(open(result[0], 'rb'))
+)
+contact.save()
+os.remove('tmp.jpg')

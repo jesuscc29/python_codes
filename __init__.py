@@ -195,7 +195,8 @@ client = mandrill.Mandrill('API KEY')
 message = dict()
 
  message = {
-   'subject': 'Test Email', 
+   'subject': 'Test Email','from_email': 'jesus@i-w.mx', 
+   'from_name': 'Jesus Antonio Cota', 
    'text': 'Example Text', 
    'to': [
      {

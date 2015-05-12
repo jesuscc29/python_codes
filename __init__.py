@@ -229,3 +229,15 @@ contact.profile_picture.save(
 )
 contact.save()
 os.remove('tmp.jpg')
+
+# ======================================
+# Sort a list of dicts
+# ======================================
+projected = sorted(projected_incomes, key=lambda k: k['date_stamp'])
+
+# ==========================================
+# Get the min() and max() of a list of dicts
+# ==========================================
+lower_val, higher_value = sys.maxint, -sys.maxint-1
+    for x in (item['total'] for item in real):
+        lower_val, higher_value = min(x, lower_val), max(x, higher_value)
